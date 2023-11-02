@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <title>T-Shirts</title>
+</head>
+<body>
+  <h1>T-Shirt Shop</h1>
+  <div id="root" class="tshirt-gallery"></div>
+ 
+<script type="text/babel">
+  const TShirt = ({ title, image, price, stock, onBuy }) => {
+  const [quantity, setQuantity] = React.useState(1);
+
+  const handleBuy = () => {
+    if (quantity > 0) {
+      onBuy(title, quantity);
+      setQuantity(1);
+    }
+  };
+
+  return (
+    <div className="TShirt">
+  <h2>{title}</h2>
+  <img src={`./images/${image}`} alt={title} width="400" />
+  <p>Price: ${price.toFixed(2)}</p>
+  {stock > 0 ? (
+    <div>
+      <p>Remaining Stock: {stock}</p>
+      <label htmlFor="quantity">Quantity:</label>
+      <select
+        id="quantity"
+        value={quantity}
+        onChange={(e) => setQuantity(parseInt(e.target.value))}
+      >
+        {Array.from({ length: stock + 1 }, (_, i) => (
+          <option key={i} value={i}>
+            {i}
+          </option>
+  ))}
+      </select>
+      <button onClick={handleBuy}>Buy</button>
+    </div>
+  ) : (
+    <p>Out of Stock</p>
+  )}
+</div>
+  );
+};
+function App() {
+  const [tshirtData, setTshirtData] = React.useState(tshirts);
+
+  const handleBuyTshirt = (title, quantity) => {
+    const updatedData = tshirtData.map((tshirt) =>
+      tshirt.title === title
+        ? { ...tshirt, stock: tshirt.stock - quantity }
+        : tshirt
+    );
+    setTshirtData(updatedData);
+  };
+
+  const tShirts = tshirtData.map((tshirt, index) => (
+    <TShirt key={index} {...tshirt} onBuy={handleBuyTshirt} />
+  ));
+
+  return (
+    <div className="tshirt-gallery">
+      {tShirts}
+    </div>
+  );
+}
+
+const rootElement = document.getElementById('root');
+ReactDOM.render(<App />, rootElement);
+</script>
+
+  
+  <script src="t-shirts.js"></script>
+</body>
+</html>
